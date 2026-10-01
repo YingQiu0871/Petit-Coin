@@ -1,0 +1,12 @@
+Need a toilet in France, fast? Petit Coin shows the public toilets closest to you on a map.
+
+• Nationwide: data from OpenStreetMap, merged with city open data.
+• At a glance: opening hours, free or paid, wheelchair access, baby changing.
+• Filters: show only toilets that are open now, free, accessible or have baby changing.
+• Walking directions: distance and walking time, then one tap to open your maps app.
+• English, French and Chinese, following your phone's language.
+• Material 3 design with frosted-glass panels, dynamic color or eight preset palettes.
+
+Privacy first: no account, no ad tracking. Your location is used on your phone to find nearby toilets, and anonymous analytics are off by default.
+
+Toilet data © OpenStreetMap contributors, available under the ODbL. Source code is open under Apache 2.0.
