@@ -62,12 +62,17 @@ jobs:
       contents: write
     steps:
       - uses: actions/download-artifact@v4
+        # Nothing to publish when every emulator job failed before its screenshots.
+        continue-on-error: true
         with:
           pattern: screenshots-*
           merge-multiple: true
           path: screenshots
       - name: Push to the emulator-screenshots branch
         run: |
+          if [ -z "$(ls -A screenshots 2>/dev/null)" ]; then
+            echo "No screenshots to publish"; exit 0
+          fi
           cd screenshots
           git init -q -b emulator-screenshots
           git config user.name "github-actions"
