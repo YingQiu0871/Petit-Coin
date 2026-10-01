@@ -1,0 +1,87 @@
+{
+  "@@locale": "en",
+  "appTitle": "Petit Coin",
+  "searchHint": "Search places or toilets",
+  "settings": "Settings",
+  "nearby": "Toilets nearby",
+  "filterOpenNow": "Open now",
+  "filterFree": "Free",
+  "filterAccessible": "Accessible",
+  "filterBabyChange": "Baby change",
+  "paid": "Paid",
+  "openNow": "Open",
+  "closedNow": "Closed",
+  "hoursUnknown": "Hours unknown",
+  "hours": "Hours",
+  "directions": "Directions",
+  "report": "Report",
+  "locateMe": "My location",
+  "noResults": "No toilets match these filters. Try removing one.",
+  "loadError": "Could not load toilets. Check your connection.",
+  "retry": "Retry",
+  "appearance": "Appearance",
+  "dynamicColor": "Dynamic color",
+  "dynamicColorSub": "Colors generated from your wallpaper",
+  "dynamicColorUnavailable": "Not supported on this device",
+  "presetPalettes": "Preset palettes",
+  "language": "Language",
+  "followSystem": "Follow system",
+  "dataAndUpdates": "Data and updates",
+  "lastSync": "Last sync",
+  "neverSynced": "Not synced yet",
+  "syncNow": "Sync now",
+  "syncNote": "When you open the app and the last sync is over 24 hours old, your area refreshes in the background.",
+  "privacy": "Privacy",
+  "analytics": "Anonymous usage stats",
+  "analyticsSub": "Helps us improve the app, no location",
+  "optionalOffByDefault": "Optional, off by default",
+  "readPolicy": "Read the full privacy policy",
+  "withdrawConsent": "Withdraw consent",
+  "consentTitle": "Please read our privacy policy",
+  "consentLead": "We only collect what is needed to find a toilet.",
+  "consentPointLocation": "Your location stays on your phone to find nearby toilets. It is never stored on our servers.",
+  "consentPointNoSale": "We never sell data and use no ad tracking.",
+  "consentPointContrib": "Your fixes and ratings are shown anonymously to help others.",
+  "consentPointWithdraw": "You can withdraw consent or delete your data in Settings at any time.",
+  "agreeAndContinue": "Agree and continue",
+  "decline": "Decline",
+  "declinedTitle": "Your consent is needed",
+  "declinedBody": "The app cannot be used without accepting the privacy policy. You can review it again at any time.",
+  "reviewAgain": "Review the privacy policy",
+  "osmAttribution": "© OpenStreetMap contributors",
+  "back": "Back",
+  "close": "Close",
+  "paletteLagoon": "Lagoon",
+  "paletteIndigo": "Indigo",
+  "paletteForest": "Forest",
+  "paletteRose": "Rose",
+  "paletteAmber": "Amber",
+  "paletteLavender": "Lavender",
+  "paletteBrick": "Brick",
+  "paletteGraphite": "Graphite",
+  "unnamedToilet": "Public toilet",
+  "resultCount": "{count, plural, =0{No results} =1{1 result} other{{count} results}}",
+  "@resultCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walkMinutes": "{minutes} min walk",
+  "@walkMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "sourceLine": "Source: {source}",
+  "@sourceLine": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  }
+}
