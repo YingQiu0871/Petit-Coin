@@ -4,7 +4,7 @@ Une envie pressante ? Petit Coin affiche sur une carte les toilettes publiques l
 • L'essentiel d'un coup d'œil : horaires, gratuit ou payant, accès PMR, table à langer.
 • Filtres : ouvert maintenant, gratuit, accessible, table à langer.
 • Itinéraire à pied : distance et temps de marche, puis ouverture en un geste dans votre appli de cartes.
-• Français, anglais et chinois, selon la langue de votre téléphone.
+• 12 langues, dont le français, l'anglais, l'allemand, l'espagnol, le chinois et le japonais, selon la langue de votre téléphone.
 • Design Material 3 avec panneaux en verre dépoli, couleurs dynamiques ou huit palettes au choix.
 
 Respect de la vie privée : sans compte, sans pistage publicitaire. Votre position sert uniquement sur votre téléphone à trouver les toilettes proches, et les statistiques anonymes sont désactivées par défaut.

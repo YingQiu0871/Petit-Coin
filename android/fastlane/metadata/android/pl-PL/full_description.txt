@@ -1,0 +1,12 @@
+Pilnie szukasz toalety? Petit Coin pokazuje na mapie najbliższe toalety publiczne w całej Francji.
+
+• Cała Francja: dane z OpenStreetMap, uzupełniane otwartymi danymi miast.
+• Wszystko od razu: godziny otwarcia, bezpłatna czy płatna, dostępność, przewijak.
+• Filtry: tylko otwarte teraz, bezpłatne, dostępne lub z przewijakiem.
+• Trasa pieszo: odległość i czas dojścia, a jednym dotknięciem otworzysz aplikację map.
+• 12 języków, w tym polski, francuski i angielski, zgodnie z językiem telefonu.
+• Design Material 3 z panelami z matowego szkła, dynamiczne kolory lub osiem palet.
+
+Prywatność przede wszystkim: bez konta i bez śledzenia reklamowego. Lokalizacja służy tylko w telefonie do znajdowania pobliskich toalet, a anonimowe statystyki są domyślnie wyłączone.
+
+Dane o toaletach © współtwórcy OpenStreetMap, na licencji ODbL. Kod źródłowy otwarty na licencji Apache 2.0.

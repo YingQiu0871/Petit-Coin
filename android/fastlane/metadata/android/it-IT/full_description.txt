@@ -1,0 +1,12 @@
+Ti serve un bagno, subito? Petit Coin ti mostra sulla mappa i bagni pubblici più vicini, in tutta la Francia.
+
+• Tutta la Francia: dati OpenStreetMap, arricchiti con i dati aperti delle città.
+• Tutto a colpo d'occhio: orari, gratuito o a pagamento, accessibilità, fasciatoio.
+• Filtri: solo quelli aperti ora, gratuiti, accessibili o con fasciatoio.
+• Indicazioni a piedi: distanza e tempo di cammino, poi con un tocco apri la tua app di mappe.
+• 12 lingue, tra cui italiano, francese e inglese, in base alla lingua del telefono.
+• Design Material 3 con pannelli in vetro smerigliato, colori dinamici o otto palette.
+
+Privacy prima di tutto: nessun account, nessun tracciamento pubblicitario. La tua posizione viene usata solo sul telefono per trovare i bagni vicini e le statistiche anonime sono disattivate per impostazione predefinita.
+
+Dati sui bagni © contributori di OpenStreetMap, con licenza ODbL. Codice sorgente aperto con licenza Apache 2.0.
