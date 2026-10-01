@@ -8,14 +8,28 @@ mkdir -p "$OUT"
 
 shot() { adb exec-out screencap -p > "$OUT/$1.png"; echo "saved $OUT/$1.png"; }
 
-# Tap the centre of the first on-screen element whose text matches $1.
+# Tap the centre of the first on-screen element whose text or
+# content-desc starts with $1. Flutter only exposes its semantics tree
+# once an accessibility client (uiautomator) has connected, so the first
+# dump can be empty: retry, scrolling down between attempts.
 tap_text() {
-  adb shell uiautomator dump /sdcard/ui.xml >/dev/null
-  local bounds
-  bounds=$(adb exec-out cat /sdcard/ui.xml | tr '>' '\n' \
-    | grep -E "(text|content-desc)=\"$1" | head -1 \
-    | sed -E 's/.*bounds="\[([0-9]+),([0-9]+)\]\[([0-9]+),([0-9]+)\]".*/\1 \2 \3 \4/')
-  if [ -z "$bounds" ]; then echo "no element for '$1'"; return 1; fi
+  local bounds=""
+  for attempt in 1 2 3 4 5 6; do
+    adb shell uiautomator dump /sdcard/ui.xml >/dev/null 2>&1 || true
+    adb exec-out cat /sdcard/ui.xml > "$OUT/ui.xml" 2>/dev/null || true
+    bounds=$(tr '>' '\n' < "$OUT/ui.xml" \
+      | grep -E "(text|content-desc)=\"$1" | head -1 \
+      | sed -E 's/.*bounds="\[([0-9]+),([0-9]+)\]\[([0-9]+),([0-9]+)\]".*/\1 \2 \3 \4/' || true)
+    [ -n "$bounds" ] && break
+    echo "attempt $attempt: '$1' not found yet"
+    sleep 2
+    [ "$attempt" -ge 3 ] && adb shell input swipe 500 1500 500 500 300
+  done
+  if [ -z "$bounds" ]; then
+    echo "no element for '$1'. Visible labels:"
+    grep -oE '(text|content-desc)="[^"]+"' "$OUT/ui.xml" | sort -u | head -40 || true
+    return 1
+  fi
   read -r x1 y1 x2 y2 <<<"$bounds"
   adb shell input tap $(((x1 + x2) / 2)) $(((y1 + y2) / 2))
 }
