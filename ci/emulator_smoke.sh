@@ -49,6 +49,9 @@ sleep 25
 shot 2-map
 
 adb shell pidof "$PKG" >/dev/null || { echo "app is not running"; adb logcat -d | tail -200; exit 1; }
+# Data comes from a public API that can be busy, so a failed load is
+# reported but does not fail the run.
+adb logcat -d | grep "Toilet load failed" && echo "::warning::toilet data did not load on the emulator"
 if adb logcat -d | grep -E "FATAL EXCEPTION|E/flutter" ; then
   echo "errors in logcat"; exit 1
 fi
