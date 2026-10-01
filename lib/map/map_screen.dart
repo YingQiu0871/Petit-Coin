@@ -19,9 +19,12 @@ const _styleUrl = 'https://tiles.openfreemap.org/styles/liberty';
 const _fallback = LatLng(48.8584, 2.3470);
 
 class MapScreen extends StatefulWidget {
-  const MapScreen({super.key, required this.repository});
+  const MapScreen({super.key, required this.repository, this.onStyleLoaded});
 
   final ToiletRepository repository;
+
+  /// Called once the map style has loaded; lets device tests wait for it.
+  final VoidCallback? onStyleLoaded;
 
   @override
   State<MapScreen> createState() => _MapScreenState();
@@ -197,6 +200,7 @@ class _MapScreenState extends State<MapScreen> {
                   _map?.moveCamera(CameraUpdate.newLatLngZoom(_here, 15));
                 }
                 _drawPins();
+                widget.onStyleLoaded?.call();
               },
             ),
           ),

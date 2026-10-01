@@ -1,4 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 import 'package:petit_coin/data/filters.dart';
 import 'package:petit_coin/data/opening_hours.dart';
 import 'package:petit_coin/data/sync_policy.dart';
@@ -130,6 +132,40 @@ void main() {
     expect(
       SyncPolicy.isStale(now.subtract(const Duration(hours: 24)), now),
       isTrue,
+    );
+  });
+
+  test(
+    'falls back to the next Overpass mirror and identifies itself',
+    () async {
+      final hosts = <String>[];
+      final repo = ToiletRepository(
+        endpoints: const ['https://a.test/api', 'https://b.test/api'],
+        client: MockClient((req) async {
+          hosts.add(req.url.host);
+          expect(req.headers['User-Agent'], ToiletRepository.userAgent);
+          if (req.url.host == 'a.test') return http.Response('busy', 429);
+          return http.Response(
+            '{"elements":[{"type":"node","id":1,"lat":48.86,"lon":2.35,'
+            '"tags":{"amenity":"toilets"}}]}',
+            200,
+          );
+        }),
+      );
+      final toilets = await repo.fetch(const BBox(48.8, 2.3, 48.9, 2.4));
+      expect(hosts, ['a.test', 'b.test']);
+      expect(toilets, hasLength(1));
+    },
+  );
+
+  test('reports the last error when every mirror fails', () async {
+    final repo = ToiletRepository(
+      endpoints: const ['https://a.test/api'],
+      client: MockClient((_) async => http.Response('down', 504)),
+    );
+    expect(
+      repo.fetch(const BBox(48.8, 2.3, 48.9, 2.4)),
+      throwsA(isA<http.ClientException>()),
     );
   });
 }

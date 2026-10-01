@@ -24,16 +24,26 @@ class BBox {
 class ToiletRepository {
   ToiletRepository({
     http.Client? client,
-    this.endpoint = 'https://overpass-api.de/api/interpreter',
+    this.endpoints = const [
+      'https://overpass-api.de/api/interpreter',
+      'https://overpass.private.coffee/api/interpreter',
+    ],
     DateTime Function()? clock,
   }) : _client = client ?? http.Client(),
        _clock = clock ?? DateTime.now;
+
+  /// Overpass asks clients to identify themselves; generic library agents
+  /// may be throttled or refused.
+  static const userAgent =
+      'PetitCoin/0.1 (+https://github.com/YingQiu0871/Petit-Coin)';
 
   static const _kCache = 'toiletCache';
   static const _kSyncedAt = 'toiletSyncedAt';
 
   final http.Client _client;
-  final String endpoint;
+
+  /// Tried in order until one answers.
+  final List<String> endpoints;
   final DateTime Function() _clock;
 
   Future<DateTime?> lastSync() async {
@@ -70,14 +80,26 @@ class ToiletRepository {
         '[out:json][timeout:25];'
         'nwr["amenity"="toilets"](${b.south},${b.west},${b.north},${b.east});'
         'out center tags;';
-    final res = await _client.post(Uri.parse(endpoint), body: {'data': query});
-    if (res.statusCode != 200) {
-      throw http.ClientException(
-        'Overpass ${res.statusCode}',
-        res.request?.url,
-      );
+    Object? lastError;
+    for (final endpoint in endpoints) {
+      try {
+        final res = await _client
+            .post(
+              Uri.parse(endpoint),
+              headers: {'User-Agent': userAgent},
+              body: {'data': query},
+            )
+            .timeout(const Duration(seconds: 30));
+        if (res.statusCode == 200) return parseOverpass(res.body);
+        lastError = http.ClientException(
+          'Overpass ${res.statusCode}',
+          res.request?.url,
+        );
+      } catch (e) {
+        lastError = e;
+      }
     }
-    return parseOverpass(res.body);
+    throw lastError ?? StateError('no Overpass endpoints configured');
   }
 
   static List<Toilet> parseOverpass(String body) {
