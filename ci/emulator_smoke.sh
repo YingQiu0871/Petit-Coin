@@ -12,6 +12,22 @@ shot() { adb exec-out screencap -p > "$OUT/$1.png"; echo "saved $OUT/$1.png"; }
 # content-desc starts with $1. Flutter only exposes its semantics tree
 # once an accessibility client (uiautomator) has connected, so the first
 # dump can be empty: retry, scrolling down between attempts.
+# Slow CI emulators sometimes show "<app> isn't responding" for the
+# launcher; that dialog covers our app, so wait it out.
+dismiss_anr() {
+  grep -q "isn't responding" "$OUT/ui.xml" 2>/dev/null || return 0
+  local wait
+  wait=$(tr '>' '\n' < "$OUT/ui.xml" | grep -E 'text="Wait"' | head -1 \
+    | sed -E 's/.*bounds="\[([0-9]+),([0-9]+)\]\[([0-9]+),([0-9]+)\]".*/\1 \2 \3 \4/' || true)
+  echo "system ANR dialog on screen, tapping Wait"
+  if [ -n "$wait" ]; then
+    read -r x1 y1 x2 y2 <<<"$wait"
+    adb shell input tap $(((x1 + x2) / 2)) $(((y1 + y2) / 2))
+  else
+    adb shell input keyevent KEYCODE_BACK
+  fi
+}
+
 tap_text() {
   local bounds=""
   for attempt in 1 2 3 4 5 6; do
@@ -22,6 +38,7 @@ tap_text() {
       | sed -E 's/.*bounds="\[([0-9]+),([0-9]+)\]\[([0-9]+),([0-9]+)\]".*/\1 \2 \3 \4/' || true)
     [ -n "$bounds" ] && break
     echo "attempt $attempt: '$1' not found yet"
+    dismiss_anr
     sleep 2
     [ "$attempt" -ge 3 ] && adb shell input swipe 500 1500 500 500 300
   done
