@@ -16,7 +16,9 @@ jobs:
       matrix:
         include:
           - device: pixel_8
+            fallbacks: "pixel_7|pixel_6"
           - device: pixel_fold
+            fallbacks: "7.6in Foldable|8in Foldable"
     steps:
       - uses: actions/checkout@v4
       - name: Enable KVM
@@ -35,13 +37,30 @@ jobs:
           cache: true
       - run: flutter pub get
       - run: flutter build apk --release
+      - name: Pick hardware profile
+        id: profile
+        env:
+          WANT: ${{ matrix.device }}
+          FALLBACKS: ${{ matrix.fallbacks }}
+        run: |
+          # The runner's avdmanager may not know the newest device ids.
+          AVDM=$(ls -d "$ANDROID_HOME"/cmdline-tools/*/bin | sort -V | tail -1)/avdmanager
+          "$AVDM" list device -c | tee devices.txt
+          pick=""
+          IFS='|' read -ra cands <<< "$WANT|$FALLBACKS"
+          for d in "${cands[@]}"; do
+            if grep -qxF "$d" devices.txt; then pick="$d"; break; fi
+          done
+          if [ -z "$pick" ]; then echo "none of $WANT|$FALLBACKS available"; exit 1; fi
+          echo "Using profile: $pick"
+          echo "name=$pick" >> "$GITHUB_OUTPUT"
       - name: Integration test and smoke test
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 34
           target: google_apis
           arch: x86_64
-          profile: ${{ matrix.device }}
+          profile: ${{ steps.profile.outputs.name }}
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
           script: |
