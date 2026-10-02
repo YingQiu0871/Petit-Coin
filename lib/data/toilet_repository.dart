@@ -24,10 +24,8 @@ class BBox {
 class ToiletRepository {
   ToiletRepository({
     http.Client? client,
-    this.endpoints = const [
-      'https://overpass-api.de/api/interpreter',
-      'https://overpass.private.coffee/api/interpreter',
-    ],
+    this.endpoints = const ['https://overpass-api.de/api/interpreter'],
+    this.retryDelay = const Duration(seconds: 3),
     DateTime Function()? clock,
   }) : _client = client ?? http.Client(),
        _clock = clock ?? DateTime.now;
@@ -42,8 +40,12 @@ class ToiletRepository {
 
   final http.Client _client;
 
-  /// Tried in order until one answers.
+  /// Tried in order until one answers. Public mirrors were unreachable
+  /// from CI in October 2026, so only the main instance is listed.
   final List<String> endpoints;
+
+  /// Wait before retrying an endpoint that said it is busy.
+  final Duration retryDelay;
   final DateTime Function() _clock;
 
   Future<DateTime?> lastSync() async {
@@ -82,21 +84,27 @@ class ToiletRepository {
         'out center tags;';
     Object? lastError;
     for (final endpoint in endpoints) {
-      try {
-        final res = await _client
-            .post(
-              Uri.parse(endpoint),
-              headers: {'User-Agent': userAgent},
-              body: {'data': query},
-            )
-            .timeout(const Duration(seconds: 30));
-        if (res.statusCode == 200) return parseOverpass(res.body);
-        lastError = http.ClientException(
-          'Overpass ${res.statusCode}',
-          res.request?.url,
-        );
-      } catch (e) {
-        lastError = e;
+      // A busy instance (429/5xx) gets one more try before moving on.
+      for (var attempt = 0; attempt < 2; attempt++) {
+        if (attempt > 0) await Future<void>.delayed(retryDelay);
+        try {
+          final res = await _client
+              .post(
+                Uri.parse(endpoint),
+                headers: {'User-Agent': userAgent},
+                body: {'data': query},
+              )
+              .timeout(const Duration(seconds: 30));
+          if (res.statusCode == 200) return parseOverpass(res.body);
+          lastError = http.ClientException(
+            'Overpass ${res.statusCode}',
+            res.request?.url,
+          );
+          if (res.statusCode != 429 && res.statusCode < 500) break;
+        } catch (e) {
+          lastError = e;
+          break;
+        }
       }
     }
     throw lastError ?? StateError('no Overpass endpoints configured');
