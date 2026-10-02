@@ -21,30 +21,33 @@ jobs:
           Q="[out:json][timeout:25];nwr[\"amenity\"=\"toilets\"]($S,$W,$N,$E);out center tags;"
           UA='PetitCoin/0.1 (+https://github.com/YingQiu0871/Petit-Coin)'
           ok=0
-          echo "| Endpoint | HTTP | Toilets | In box | fee | wheelchair | opening_hours |" >> "$GITHUB_STEP_SUMMARY"
-          echo "|---|---|---|---|---|---|---|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Endpoint | HTTP | Toilets | In box | Shown in app | fee | wheelchair | opening_hours |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|---|---|---|---|---|---|---|---|" >> "$GITHUB_STEP_SUMMARY"
           for url in https://overpass-api.de/api/interpreter https://overpass.private.coffee/api/interpreter; do
             rm -f out.json
             code=$(curl -s -o out.json -w '%{http_code}' -m 60 -A "$UA" --data-urlencode "data=$Q" "$url") || true
             code=${code:-000}
             if [ "$code" = 200 ] && jq -e '.elements' out.json >/dev/null 2>&1; then
-              read -r total inbox fee wc oh < <(jq -r --argjson s $S --argjson w $W --argjson n $N --argjson e $E '
+              read -r total inbox shown fee wc oh < <(jq -r --argjson s $S --argjson w $W --argjson n $N --argjson e $E '
                 [.elements[] | {lat: (.lat // .center.lat), lon: (.lon // .center.lon), t: (.tags // {})}] as $x
                 | [($x | length),
                    ($x | map(select(.lat >= $s and .lat <= $n and .lon >= $w and .lon <= $e)) | length),
+                   ($x | map(select(.t.access != "private" and .t.access != "no")) | length),
                    ($x | map(select(.t.fee)) | length),
                    ($x | map(select(.t.wheelchair)) | length),
                    ($x | map(select(.t.opening_hours)) | length)]
                 | @tsv' out.json)
-              echo "| $url | $code | $total | $inbox | $fee | $wc | $oh |" >> "$GITHUB_STEP_SUMMARY"
-              echo "$url: $total toilets, $inbox in box, fee=$fee wheelchair=$wc opening_hours=$oh"
+              echo "| $url | $code | $total | $inbox | $shown | $fee | $wc | $oh |" >> "$GITHUB_STEP_SUMMARY"
+              # "shown" drops access=private/no, as Toilet.fromOverpass does.
+              echo "$url: $total toilets, $inbox in box, $shown shown in app, fee=$fee wheelchair=$wc opening_hours=$oh"
               echo "sample:"; jq -c '.elements[:3][] | {id, type, tags}' out.json
               # Central Paris has well over a hundred mapped toilets.
               # A way's centre can fall just outside the box, so allow a few.
               if [ "$total" -ge 50 ] && [ $((inbox * 100)) -ge $((total * 95)) ]; then ok=1; fi
             else
-              echo "| $url | $code | - | - | - | - | - |" >> "$GITHUB_STEP_SUMMARY"
-              echo "$url: HTTP $code"; head -c 300 out.json 2>/dev/null; echo
+              echo "| $url | $code | - | - | - | - | - | - |" >> "$GITHUB_STEP_SUMMARY"
+              echo "::warning::$url answered HTTP $code"
+              head -c 300 out.json 2>/dev/null || true; echo
             fi
           done
           [ "$ok" = 1 ] || { echo "::error::no Overpass endpoint returned plausible toilet data"; exit 1; }
