@@ -1,4 +1,4 @@
-package io.github.yingqiu0871.petit_coin
+package me.yingqiu.petitcoin
 
 import io.flutter.embedding.android.FlutterActivity
 

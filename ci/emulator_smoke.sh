@@ -2,7 +2,7 @@
 # Runs inside android-emulator-runner. Installs the app, walks through
 # consent with real taps, and saves screenshots for review.
 set -euo pipefail
-PKG=io.github.yingqiu0871.petit_coin
+PKG=me.yingqiu.petitcoin
 OUT=${1:-screenshots}
 mkdir -p "$OUT"
 
