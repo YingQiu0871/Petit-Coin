@@ -1,0 +1,102 @@
+name: Android
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  emulator:
+    name: emulator (${{ matrix.device }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - device: pixel_8
+            fallbacks: "pixel_7|pixel_6"
+          - device: pixel_fold
+            fallbacks: "7.6in Foldable|8in Foldable"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.47.6
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter build apk --release
+      - name: Pick hardware profile
+        id: profile
+        env:
+          WANT: ${{ matrix.device }}
+          FALLBACKS: ${{ matrix.fallbacks }}
+        run: |
+          # The runner's avdmanager may not know the newest device ids.
+          AVDM=$(ls -d "$ANDROID_HOME"/cmdline-tools/*/bin | sort -V | tail -1)/avdmanager
+          "$AVDM" list device -c | tee devices.txt
+          pick=""
+          IFS='|' read -ra cands <<< "$WANT|$FALLBACKS"
+          for d in "${cands[@]}"; do
+            if grep -qxF "$d" devices.txt; then pick="$d"; break; fi
+          done
+          if [ -z "$pick" ]; then echo "none of $WANT|$FALLBACKS available"; exit 1; fi
+          echo "Using profile: $pick"
+          echo "name=$pick" >> "$GITHUB_OUTPUT"
+      - name: Integration test and smoke test
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          profile: ${{ steps.profile.outputs.name }}
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          script: |
+            flutter test integration_test -d emulator-5554
+            ./ci/emulator_smoke.sh screenshots/${{ matrix.device }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: screenshots-${{ matrix.device }}
+          path: screenshots/
+          if-no-files-found: ignore
+
+  publish-screenshots:
+    needs: emulator
+    if: always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        # Nothing to publish when every emulator job failed before its screenshots.
+        continue-on-error: true
+        with:
+          pattern: screenshots-*
+          merge-multiple: true
+          path: screenshots
+      - name: Push to the emulator-screenshots branch
+        run: |
+          if [ -z "$(ls -A screenshots 2>/dev/null)" ]; then
+            echo "No screenshots to publish"; exit 0
+          fi
+          cd screenshots
+          git init -q -b emulator-screenshots
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          echo "Screenshots from ${GITHUB_SHA} (run ${GITHUB_RUN_ID})" > README.md
+          git add -A
+          git commit -q -m "Emulator screenshots for ${GITHUB_SHA}"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" emulator-screenshots
