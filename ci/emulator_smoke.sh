@@ -8,10 +8,6 @@ mkdir -p "$OUT"
 
 shot() { adb exec-out screencap -p > "$OUT/$1.png"; echo "saved $OUT/$1.png"; }
 
-# Tap the centre of the first on-screen element whose text or
-# content-desc starts with $1. Flutter only exposes its semantics tree
-# once an accessibility client (uiautomator) has connected, so the first
-# dump can be empty: retry, scrolling down between attempts.
 # Slow CI emulators sometimes show "<app> isn't responding" for the
 # launcher; that dialog covers our app, so wait it out.
 dismiss_anr() {
@@ -28,6 +24,10 @@ dismiss_anr() {
   fi
 }
 
+# Tap the centre of the first on-screen element whose text or
+# content-desc starts with $1. Flutter only exposes its semantics tree
+# once an accessibility client (uiautomator) has connected, so the first
+# dump can be empty: retry, scrolling down between attempts.
 tap_text() {
   local bounds=""
   for attempt in 1 2 3 4 5 6; do
@@ -67,6 +67,14 @@ shot 1-consent
 tap_text "Agree and continue"
 sleep 25
 shot 2-map
+
+# Record what the nearby list shows, so the data source can be checked
+# from the run log without opening screenshots.
+adb shell uiautomator dump /sdcard/map.xml >/dev/null 2>&1 || true
+adb exec-out cat /sdcard/map.xml > "$OUT/map.xml" 2>/dev/null || true
+grep -oE '(text|content-desc)="[^"]*(result|m&#10;|min|Open|Closed|Hours|Free|Paid)[^"]*"' "$OUT/map.xml" \
+  | sed -E 's/^(text|content-desc)="//; s/"$//; s/&#10;/ | /g' | head -12 > "$OUT/nearby.txt" || true
+echo "nearby list on screen:"; cat "$OUT/nearby.txt"
 
 adb shell pidof "$PKG" >/dev/null || { echo "app is not running"; adb logcat -d | tail -200; exit 1; }
 # Data comes from a public API that can be busy, so a failed load is
