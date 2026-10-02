@@ -52,7 +52,7 @@ keyPassword=...
 | 应用名、简短说明、完整说明 | `metadata/android/<语言>/`，共 12 种 |
 | 应用图标 512×512 | `metadata/android/en-US/images/icon.png` |
 | 置顶大图 1024×500 | `metadata/android/en-US/images/featureGraphic.png` |
-| 手机截图（至少 2 张） | 模拟器 CI 产出的截图，见 `emulator-screenshots` 分支 |
+| 手机截图（至少 2 张） | 中文：`metadata/android/zh-CN/images/phoneScreenshots/`，可用 Actions › Store screenshots 重新生成 |
 | 隐私权政策网址 | `https://github.com/YingQiu0871/Petit-Coin/blob/main/PRIVACY.md` |
 | 联系邮箱 | petitcoin@yingqiu.me |
 | 类别 | 地图和导航 |
@@ -80,4 +80,3 @@ keyPassword=...
 
 - `PRIVACY.md` 第 1 节的运营主体名称和地址。
 - 隐私条款请熟悉 GDPR 的人审一遍。
-- 中文商店截图（目前的模拟器截图是英文界面）。
