@@ -1,0 +1,83 @@
+name: Store screenshots
+
+# Play Store phone screenshots in Simplified Chinese. Run by hand from the
+# Actions tab; also runs on PRs that change the script.
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ci/store_screenshots.sh
+      - ci/ui_helpers.sh
+      - .github/workflows/store-screenshots.yml
+
+jobs:
+  phone:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.47.6
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter build apk --release
+      - name: Pick hardware profile
+        id: profile
+        run: |
+          AVDM=$(ls -d "$ANDROID_HOME"/cmdline-tools/*/bin | sort -V | tail -1)/avdmanager
+          "$AVDM" list device -c > devices.txt
+          for d in pixel_8 pixel_7 pixel_6; do
+            if grep -qxF "$d" devices.txt; then echo "name=$d" >> "$GITHUB_OUTPUT"; echo "Using $d"; exit 0; fi
+          done
+          exit 1
+      - name: Take screenshots
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          profile: ${{ steps.profile.outputs.name }}
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          script: ./ci/store_screenshots.sh store-screenshots
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: store-screenshots
+          path: store-screenshots/*.png
+          if-no-files-found: ignore
+
+  publish:
+    needs: phone
+    if: always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: store-screenshots
+          path: shots
+      - name: Push to the store-screenshots branch
+        run: |
+          if [ -z "$(ls -A shots 2>/dev/null)" ]; then echo "No screenshots"; exit 0; fi
+          cd shots
+          git init -q -b store-screenshots
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          echo "Store screenshots from ${GITHUB_SHA} (run ${GITHUB_RUN_ID})" > README.md
+          git add -A
+          git commit -q -m "Store screenshots for ${GITHUB_SHA}"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" store-screenshots
