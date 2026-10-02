@@ -51,6 +51,9 @@ tap_text() {
   adb shell input tap $(((x1 + x2) / 2)) $(((y1 + y2) / 2))
 }
 
+# Keep system "isn't responding" dialogs from covering the app; crashes
+# are still caught from logcat below.
+adb shell settings put global hide_error_dialogs 1
 adb install -r build/app/outputs/flutter-apk/app-release.apk
 adb shell pm grant "$PKG" android.permission.ACCESS_FINE_LOCATION
 adb shell pm grant "$PKG" android.permission.ACCESS_COARSE_LOCATION
