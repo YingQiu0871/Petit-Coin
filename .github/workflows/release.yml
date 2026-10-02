@@ -3,6 +3,16 @@ name: Release
 on:
   push:
     tags: ['v*']
+  # For publishing from main without pushing a tag first; the release step
+  # creates the tag on the commit it built.
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag to create, e.g. v0.1.0
+        required: true
+
+env:
+  TAG: ${{ inputs.tag || github.ref_name }}
 
 jobs:
   apk:
@@ -23,9 +33,11 @@ jobs:
       - run: flutter pub get
       - run: flutter test
       - run: flutter build apk --release
-      - run: cp build/app/outputs/flutter-apk/app-release.apk "petit-coin-${GITHUB_REF_NAME}.apk"
+      - run: cp build/app/outputs/flutter-apk/app-release.apk "petit-coin-${TAG}.apk"
       - uses: softprops/action-gh-release@v2
         with:
-          prerelease: ${{ startsWith(github.ref_name, 'v0.') }}
+          tag_name: ${{ env.TAG }}
+          target_commitish: ${{ github.sha }}
+          prerelease: ${{ startsWith(env.TAG, 'v0.') }}
           body_path: RELEASE_NOTES.md
-          files: petit-coin-${{ github.ref_name }}.apk
+          files: petit-coin-${{ env.TAG }}.apk
