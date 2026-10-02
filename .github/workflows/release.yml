@@ -32,12 +32,36 @@ jobs:
           cache: true
       - run: flutter pub get
       - run: flutter test
-      - run: flutter build apk --release
-      - run: cp build/app/outputs/flutter-apk/app-release.apk "petit-coin-${TAG}.apk"
+      # With the PETIT_COIN_KEYSTORE_BASE64 secret set, builds are signed with
+      # the upload key and an AAB for Google Play is attached too.
+      - name: Restore upload keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.PETIT_COIN_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+            echo "PETIT_COIN_KEYSTORE_PATH=$RUNNER_TEMP/upload.jks" >> "$GITHUB_ENV"
+            echo "SIGNED=true" >> "$GITHUB_ENV"
+          fi
+      - name: Build
+        env:
+          PETIT_COIN_KEYSTORE_PASSWORD: ${{ secrets.PETIT_COIN_KEYSTORE_PASSWORD }}
+          PETIT_COIN_KEY_ALIAS: ${{ secrets.PETIT_COIN_KEY_ALIAS }}
+          PETIT_COIN_KEY_PASSWORD: ${{ secrets.PETIT_COIN_KEY_PASSWORD }}
+        run: |
+          flutter build apk --release
+          cp build/app/outputs/flutter-apk/app-release.apk "petit-coin-${TAG}.apk"
+          if [ "$SIGNED" = true ]; then
+            flutter build appbundle --release
+            cp build/app/outputs/bundle/release/app-release.aab "petit-coin-${TAG}.aab"
+          fi
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.TAG }}
           target_commitish: ${{ github.sha }}
           prerelease: ${{ startsWith(env.TAG, 'v0.') }}
           body_path: RELEASE_NOTES.md
-          files: petit-coin-${{ env.TAG }}.apk
+          files: |
+            petit-coin-${{ env.TAG }}.apk
+            petit-coin-${{ env.TAG }}.aab
+          fail_on_unmatched_files: false

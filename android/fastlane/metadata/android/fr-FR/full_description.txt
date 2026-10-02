@@ -1,0 +1,12 @@
+Une envie pressante ? Petit Coin affiche sur une carte les toilettes publiques les plus proches de vous, partout en France.
+
+• Toute la France : données OpenStreetMap, enrichies des données ouvertes des villes.
+• L'essentiel d'un coup d'œil : horaires, gratuit ou payant, accès PMR, table à langer.
+• Filtres : ouvert maintenant, gratuit, accessible, table à langer.
+• Itinéraire à pied : distance et temps de marche, puis ouverture en un geste dans votre appli de cartes.
+• Français, anglais et chinois, selon la langue de votre téléphone.
+• Design Material 3 avec panneaux en verre dépoli, couleurs dynamiques ou huit palettes au choix.
+
+Respect de la vie privée : sans compte, sans pistage publicitaire. Votre position sert uniquement sur votre téléphone à trouver les toilettes proches, et les statistiques anonymes sont désactivées par défaut.
+
+Données © contributeurs OpenStreetMap, sous licence ODbL. Code source ouvert sous Apache 2.0.
