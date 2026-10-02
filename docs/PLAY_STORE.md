@@ -4,7 +4,7 @@
 
 ## 1. 包名（上架后不能改）
 
-当前包名是 `io.github.yingqiu0871.petit_coin`，在 `android/app/build.gradle.kts` 的 `applicationId` 里。上传第一个版本之前定好，之后再改就只能当作一个新应用重新上架。
+包名是 `me.yingqiu.petitcoin`（2026-10-02 定下，按域名 yingqiu.me 倒写），在 `android/app/build.gradle.kts` 的 `applicationId` 里。上传到 Play 之后就不能再改，再改只能当作一个新应用重新上架。
 
 ## 2. 上传密钥
 

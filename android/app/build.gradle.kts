@@ -18,7 +18,7 @@ fun signingValue(property: String, env: String): String? =
 val releaseStoreFile = signingValue("storeFile", "PETIT_COIN_KEYSTORE_PATH")
 
 android {
-    namespace = "io.github.yingqiu0871.petit_coin"
+    namespace = "me.yingqiu.petitcoin"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -29,7 +29,7 @@ android {
 
     defaultConfig {
         // Permanent once the app is on Google Play.
-        applicationId = "io.github.yingqiu0871.petit_coin"
+        applicationId = "me.yingqiu.petitcoin"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
