@@ -1,0 +1,12 @@
+Precisa de uma casa de banho, já? O Petit Coin mostra no mapa as casas de banho públicas mais próximas, em toda a França.
+
+• Toda a França: dados do OpenStreetMap, completados com dados abertos das cidades.
+• Tudo à vista: horário, grátis ou pago, acessibilidade, fraldário.
+• Filtros: só as abertas agora, grátis, acessíveis ou com fraldário.
+• Direções a pé: distância e tempo a pé, e com um toque abre a sua app de mapas.
+• 12 idiomas, incluindo português, francês e inglês, de acordo com o idioma do telemóvel.
+• Design Material 3 com painéis de vidro fosco, cor dinâmica ou oito paletas.
+
+Privacidade em primeiro lugar: sem conta e sem rastreio publicitário. A sua localização só é usada no telemóvel para encontrar casas de banho por perto, e as estatísticas anónimas estão desativadas por predefinição.
+
+Dados © contribuidores do OpenStreetMap, sob licença ODbL. Código aberto sob Apache 2.0.

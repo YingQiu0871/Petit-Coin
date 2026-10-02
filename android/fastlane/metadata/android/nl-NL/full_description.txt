@@ -1,0 +1,12 @@
+Snel een toilet nodig? Petit Coin toont op de kaart de openbare toiletten bij jou in de buurt, overal in Frankrijk.
+
+• Heel Frankrijk: gegevens van OpenStreetMap, aangevuld met open data van steden.
+• In één oogopslag: openingstijden, gratis of betaald, toegankelijkheid, verschoontafel.
+• Filters: alleen toiletten die nu open, gratis of toegankelijk zijn of een verschoontafel hebben.
+• Looproute: afstand en looptijd, en met één tik open je je kaarten-app.
+• 12 talen, waaronder Nederlands, Frans en Engels, volgens de taal van je telefoon.
+• Material 3-ontwerp met matglazen panelen, dynamische kleuren of acht paletten.
+
+Privacy eerst: geen account, geen advertentietracking. Je locatie wordt alleen op je telefoon gebruikt om toiletten in de buurt te vinden, en anonieme statistieken staan standaard uit.
+
+Toiletgegevens © OpenStreetMap-bijdragers, onder ODbL. Broncode open onder Apache 2.0.

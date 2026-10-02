@@ -106,6 +106,32 @@ void main() {
       s.localeCode = 'fr';
       await tester.pumpAndSettle();
       expect(find.text('Avant de commencer'), findsOneWidget);
+
+      s.localeCode = 'zh_Hant';
+      await tester.pumpAndSettle();
+      expect(find.text('使用前請閱讀隱私權條款'), findsOneWidget);
+
+      s.localeCode = 'ja';
+      await tester.pumpAndSettle();
+      expect(find.text('同意して続ける'), findsOneWidget);
     });
+  });
+
+  test('maps device locales to supported languages', () {
+    String? code(Locale l) => AppSettings.codeForLocale(l);
+    expect(code(const Locale('zh', 'CN')), 'zh');
+    expect(code(const Locale('zh', 'TW')), 'zh_Hant');
+    expect(code(const Locale('zh', 'HK')), 'zh_Hant');
+    expect(
+      code(const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant')),
+      'zh_Hant',
+    );
+    expect(code(const Locale('de', 'AT')), 'de');
+    expect(code(const Locale('pt', 'BR')), 'pt');
+    expect(code(const Locale('sv')), isNull);
+    expect(
+      AppSettings.localeFromCode('zh_Hant'),
+      const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
+    );
   });
 }

@@ -49,7 +49,7 @@ keyPassword=...
 
 | 项目 | 位置 / 草稿 |
 | --- | --- |
-| 应用名、简短说明、完整说明 | `metadata/android/{zh-CN,en-US,fr-FR}/` |
+| 应用名、简短说明、完整说明 | `metadata/android/<语言>/`，共 12 种 |
 | 应用图标 512×512 | `metadata/android/en-US/images/icon.png` |
 | 置顶大图 1024×500 | `metadata/android/en-US/images/featureGraphic.png` |
 | 手机截图（至少 2 张） | 模拟器 CI 产出的截图，见 `emulator-screenshots` 分支 |

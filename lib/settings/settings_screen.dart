@@ -135,7 +135,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       value: 'system',
                       title: Text(l10n.followSystem),
                       subtitle: settings.localeCode == null
-                          ? Text(_languageName(locale.languageCode))
+                          ? Text(
+                              _languageName(
+                                AppSettings.codeForLocale(locale) ?? 'en',
+                              ),
+                            )
                           : null,
                     ),
                     for (final code in AppSettings.supportedLocaleCodes)
@@ -216,7 +220,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
 /// Language names are shown in their own language so anyone can find theirs.
 String _languageName(String code) => switch (code) {
   'zh' => '简体中文',
+  'zh_Hant' => '繁體中文',
   'fr' => 'Français',
+  'de' => 'Deutsch',
+  'es' => 'Español',
+  'it' => 'Italiano',
+  'pt' => 'Português',
+  'nl' => 'Nederlands',
+  'pl' => 'Polski',
+  'ja' => '日本語',
+  'ko' => '한국어',
   _ => 'English',
 };
 

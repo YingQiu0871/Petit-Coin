@@ -1,0 +1,12 @@
+Dringend eine Toilette gesucht? Petit Coin zeigt dir auf der Karte die öffentlichen Toiletten in deiner Nähe, überall in Frankreich.
+
+• Ganz Frankreich: Daten von OpenStreetMap, ergänzt um offene Daten der Städte.
+• Alles auf einen Blick: Öffnungszeiten, kostenlos oder kostenpflichtig, barrierefrei, Wickeltisch.
+• Filter: nur jetzt geöffnete, kostenlose, barrierefreie Toiletten oder solche mit Wickeltisch.
+• Zu Fuß hin: Entfernung und Gehzeit, dann mit einem Tipp in deiner Karten-App öffnen.
+• 12 Sprachen, darunter Deutsch, Französisch und Englisch, passend zur Sprache deines Handys.
+• Material-3-Design mit Milchglas-Elementen, dynamischen Farben oder acht Farbpaletten.
+
+Datenschutz zuerst: kein Konto, kein Werbe-Tracking. Dein Standort wird nur auf deinem Handy verwendet, um Toiletten in der Nähe zu finden. Anonyme Statistiken sind standardmäßig aus.
+
+Toilettendaten © OpenStreetMap-Mitwirkende, unter ODbL. Quellcode offen unter Apache 2.0.

@@ -8,8 +8,8 @@ First preview build for Android. 安卓首个预览版。
   厕所详情：开放时间、步行时间、设施、数据来源、步行导航。
 - Material 3 with frosted-glass panels; dynamic color or eight preset palettes.
   Material 3 + 毛玻璃界面，动态取色或 8 组预制配色。
-- English, Français, 简体中文, following the phone's language.
-  跟随系统语言，支持中英法。
+- 12 languages following the phone's language: English, Français, Deutsch, Español, Italiano, Português, Nederlands, Polski, 日本語, 한국어, 简体中文, 繁體中文.
+  跟随系统语言，支持 12 种语言，包括简体和繁体中文。
 - Privacy consent on first launch; analytics off by default.
   首次启动需同意隐私条款，匿名统计默认关闭。
 

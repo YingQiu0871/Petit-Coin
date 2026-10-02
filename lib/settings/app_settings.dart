@@ -20,7 +20,43 @@ class AppSettings extends ChangeNotifier {
   /// Bump when the privacy policy changes materially, so users are asked again.
   static const currentPolicyVersion = 1;
 
-  static const supportedLocaleCodes = ['zh', 'en', 'fr'];
+  /// Order shown in Settings. `zh_Hant` is Traditional Chinese.
+  static const supportedLocaleCodes = [
+    'zh',
+    'zh_Hant',
+    'en',
+    'fr',
+    'de',
+    'es',
+    'it',
+    'pt',
+    'nl',
+    'pl',
+    'ja',
+    'ko',
+  ];
+
+  static Locale localeFromCode(String code) => switch (code.split('_')) {
+    [final lang, final script] => Locale.fromSubtags(
+      languageCode: lang,
+      scriptCode: script,
+    ),
+    _ => Locale(code),
+  };
+
+  /// Maps a device locale to one of [supportedLocaleCodes], or null.
+  /// Taiwan, Hong Kong and Macau get Traditional Chinese even when the
+  /// device reports no script.
+  static String? codeForLocale(Locale locale) {
+    final code =
+        locale.languageCode == 'zh' &&
+            (locale.scriptCode == 'Hant' ||
+                (locale.scriptCode == null &&
+                    const {'TW', 'HK', 'MO'}.contains(locale.countryCode)))
+        ? 'zh_Hant'
+        : locale.languageCode;
+    return supportedLocaleCodes.contains(code) ? code : null;
+  }
 
   static const _kDynamic = 'dynamicColor';
   static const _kPalette = 'palette';
@@ -41,7 +77,8 @@ class AppSettings extends ChangeNotifier {
 
   /// Null means follow the system language.
   String? get localeCode => _localeCode;
-  Locale? get locale => _localeCode == null ? null : Locale(_localeCode!);
+  Locale? get locale =>
+      _localeCode == null ? null : localeFromCode(_localeCode!);
   bool get analytics => _analytics;
   bool get hasConsented => _acceptedPolicyVersion == currentPolicyVersion;
 
