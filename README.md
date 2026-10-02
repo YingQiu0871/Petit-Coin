@@ -3,11 +3,12 @@
 # Petit Coin · 方便点
 
 Find a public toilet anywhere in France. A Flutter app for iOS and Android with a
-Material 3 interface, frosted-glass panels over the map, and English, French and
-Simplified Chinese.
+Material 3 interface, frosted-glass panels over the map, in 12 languages: English, French, German,
+Spanish, Italian, Portuguese, Dutch, Polish, Japanese, Korean and Simplified and
+Traditional Chinese.
 
 在法国随时找到最近的公共厕所。Flutter 开发，支持 iOS 和 Android，界面采用
-Material 3 加毛玻璃浮层，支持简体中文、English、Français。
+Material 3 加毛玻璃浮层，支持简体中文、繁体中文、英、法、德、西、意、葡、荷、波、日、韩 12 种语言。
 
 ## Features
 

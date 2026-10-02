@@ -43,6 +43,13 @@ class PetitCoinApp extends StatelessWidget {
               darkTheme: buildTheme(scheme(Brightness.dark, darkDynamic)),
               locale: settings.locale,
               supportedLocales: AppLocalizations.supportedLocales,
+              localeListResolutionCallback: (locales, _) {
+                for (final l in locales ?? const <Locale>[]) {
+                  final code = AppSettings.codeForLocale(l);
+                  if (code != null) return AppSettings.localeFromCode(code);
+                }
+                return const Locale('en');
+              },
               localizationsDelegates: const [
                 AppLocalizations.delegate,
                 ...GlobalMaterialLocalizations.delegates,
