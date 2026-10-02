@@ -23,11 +23,8 @@ jobs:
           ok=0
           echo "| Endpoint | HTTP | Toilets | In box | Shown in app | fee | wheelchair | opening_hours |" >> "$GITHUB_STEP_SUMMARY"
           echo "|---|---|---|---|---|---|---|---|" >> "$GITHUB_STEP_SUMMARY"
-          # The app's endpoints first, then candidate mirrors for comparison.
-          for url in https://overpass-api.de/api/interpreter \
-                     https://overpass.private.coffee/api/interpreter \
-                     https://maps.mail.ru/osm/tools/overpass/api/interpreter \
-                     https://overpass.osm.jp/api/interpreter; do
+          # Same endpoints as ToiletRepository.endpoints.
+          for url in https://overpass-api.de/api/interpreter; do
             for try in 1 2; do
               rm -f out.json
               code=$(curl -s -o out.json -w '%{http_code}' -m 45 -A "$UA" --data-urlencode "data=$Q" "$url") || true

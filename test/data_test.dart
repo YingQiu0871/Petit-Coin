@@ -141,6 +141,7 @@ void main() {
       final hosts = <String>[];
       final repo = ToiletRepository(
         endpoints: const ['https://a.test/api', 'https://b.test/api'],
+        retryDelay: Duration.zero,
         client: MockClient((req) async {
           hosts.add(req.url.host);
           expect(req.headers['User-Agent'], ToiletRepository.userAgent);
@@ -153,14 +154,33 @@ void main() {
         }),
       );
       final toilets = await repo.fetch(const BBox(48.8, 2.3, 48.9, 2.4));
-      expect(hosts, ['a.test', 'b.test']);
+      // The busy endpoint is retried once before falling back.
+      expect(hosts, ['a.test', 'a.test', 'b.test']);
       expect(toilets, hasLength(1));
     },
   );
 
+  test('does not retry a request the server rejected', () async {
+    var calls = 0;
+    final repo = ToiletRepository(
+      endpoints: const ['https://a.test/api'],
+      retryDelay: Duration.zero,
+      client: MockClient((_) async {
+        calls++;
+        return http.Response('bad query', 400);
+      }),
+    );
+    await expectLater(
+      repo.fetch(const BBox(48.8, 2.3, 48.9, 2.4)),
+      throwsA(isA<http.ClientException>()),
+    );
+    expect(calls, 1);
+  });
+
   test('reports the last error when every mirror fails', () async {
     final repo = ToiletRepository(
       endpoints: const ['https://a.test/api'],
+      retryDelay: Duration.zero,
       client: MockClient((_) async => http.Response('down', 504)),
     );
     expect(
