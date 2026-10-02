@@ -4,7 +4,12 @@ name: Data source check
 # checks the answer looks like real toilet data. Daily, so a broken or
 # blocked source shows up before users notice.
 on:
+  # Only PRs that change how data is fetched; the public API is shared and
+  # sometimes busy, so it should not block unrelated changes.
   pull_request:
+    paths:
+      - lib/data/**
+      - .github/workflows/data-check.yml
   schedule:
     - cron: '17 5 * * *'
   workflow_dispatch:
@@ -25,11 +30,11 @@ jobs:
           echo "|---|---|---|---|---|---|---|---|" >> "$GITHUB_STEP_SUMMARY"
           # Same endpoints as ToiletRepository.endpoints.
           for url in https://overpass-api.de/api/interpreter; do
-            for try in 1 2; do
+            for try in 1 2 3; do
               rm -f out.json
               code=$(curl -s -o out.json -w '%{http_code}' -m 45 -A "$UA" --data-urlencode "data=$Q" "$url") || true
               code=${code:-000}
-              case "$code" in 429|502|503|504) [ "$try" = 1 ] && { echo "$url: HTTP $code, retrying"; sleep 15; continue; } ;; esac
+              case "$code" in 429|502|503|504) [ "$try" -lt 3 ] && { echo "$url: HTTP $code, retrying"; sleep $((try * 30)); continue; } ;; esac
               break
             done
             if [ "$code" = 200 ] && jq -e '.elements' out.json >/dev/null 2>&1; then
